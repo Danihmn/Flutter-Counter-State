@@ -1,6 +1,6 @@
 import 'package:curso_avancado_gerenciamento_estado/contracts/observable.dart';
 
-class ChangeState implements Observable {
+class ChangeStateController implements Observable {
   final List<void Function()> _callbacks = [];
 
   @override

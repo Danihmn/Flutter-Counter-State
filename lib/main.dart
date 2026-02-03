@@ -1,3 +1,4 @@
+import 'package:curso_avancado_gerenciamento_estado/controllers/state_observable_controller.dart';
 import 'package:flutter/material.dart';
 import 'classes/counter_state.dart';
 
@@ -29,6 +30,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final counterState = CounterState();
+  final counterValueState = ChangeObservableStateController(0);
 
   void callback() => setState(() {});
 
@@ -36,12 +38,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     counterState.addListener(callback);
+    counterValueState.addListener(callback);
   }
 
   @override
   void dispose() {
     super.dispose();
     counterState.removeListener(callback);
+    counterValueState.removeListener(callback);
   }
 
   @override
@@ -53,20 +57,51 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: .center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Text('Valor do estado:'),
-            Text(
-              counterState.counter.toString(),
-              style: Theme.of(context).textTheme.headlineMedium,
+            Column(
+              children: [
+                Column(
+                  mainAxisAlignment: .center,
+                  crossAxisAlignment: .center,
+                  children: [
+                    const Text('Estado com ChangeStateController:'),
+                    Text(
+                      counterState.counter.toString(),
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 10),
+                IconButton(
+                  onPressed: counterState.increment,
+                  icon: Icon(Icons.add),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                Column(
+                  mainAxisAlignment: .center,
+                  children: [
+                    const Text('Estado com ChangeObservableStateController:'),
+                    Text(
+                      counterValueState.state.toString(),
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 10),
+                IconButton(
+                  onPressed: () {
+                    counterValueState.state++;
+                  },
+                  icon: Icon(Icons.add),
+                ),
+              ],
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: counterState.increment,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
