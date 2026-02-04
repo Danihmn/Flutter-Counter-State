@@ -5,6 +5,6 @@ class CounterState extends ChangeStateController {
 
   void increment() {
     counter++;
-    notifyCallbacks();
+    notifyListeners();
   }
 }

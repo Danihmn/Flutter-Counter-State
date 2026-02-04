@@ -13,7 +13,7 @@ class ChangeStateController implements Observable {
     if (_callbacks.contains(callback)) _callbacks.remove(callback);
   }
 
-  void notifyCallbacks() {
+  void notifyListeners() {
     for (var callback in _callbacks) {
       callback();
     }

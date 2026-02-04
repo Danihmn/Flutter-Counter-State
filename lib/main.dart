@@ -1,4 +1,5 @@
-import 'package:curso_avancado_gerenciamento_estado/controllers/state_observable_controller.dart';
+import 'package:curso_avancado_gerenciamento_estado/builders/observable_state_builder.dart';
+import 'package:curso_avancado_gerenciamento_estado/controllers/change_observable_state_controller.dart';
 import 'package:flutter/material.dart';
 import 'classes/counter_state.dart';
 
@@ -37,14 +38,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    counterState.addListener(callback);
     counterValueState.addListener(callback);
   }
 
   @override
   void dispose() {
     super.dispose();
-    counterState.removeListener(callback);
     counterValueState.removeListener(callback);
   }
 
@@ -61,16 +60,21 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Column(
               children: [
-                Column(
-                  mainAxisAlignment: .center,
-                  crossAxisAlignment: .center,
-                  children: [
-                    const Text('Estado com ChangeStateController:'),
-                    Text(
-                      counterState.counter.toString(),
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                  ],
+                ObservableStateBuilder(
+                  observable: counterState,
+                  builder: (context) {
+                    return Column(
+                      mainAxisAlignment: .center,
+                      crossAxisAlignment: .center,
+                      children: [
+                        const Text('Estado com ObservableStateBuilder:'),
+                        Text(
+                          counterState.counter.toString(),
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(width: 10),
                 IconButton(

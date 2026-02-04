@@ -14,6 +14,6 @@ class ChangeObservableStateController<T> extends ChangeStateController
     if (value == _state) return;
 
     _state = value;
-    notifyCallbacks();
+    notifyListeners();
   }
 }
