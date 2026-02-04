@@ -1,3 +1,4 @@
+import 'package:curso_avancado_gerenciamento_estado/builders/observable_builder.dart';
 import 'package:curso_avancado_gerenciamento_estado/builders/observable_state_builder.dart';
 import 'package:curso_avancado_gerenciamento_estado/controllers/change_observable_state_controller.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData.dark(),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -33,20 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final counterState = CounterState();
   final counterValueState = ChangeObservableStateController(0);
 
-  void callback() => setState(() {});
-
-  @override
-  void initState() {
-    super.initState();
-    counterValueState.addListener(callback);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    counterValueState.removeListener(callback);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,59 +41,57 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Column(
-              children: [
-                ObservableStateBuilder(
-                  observable: counterState,
-                  builder: (context) {
-                    return Column(
-                      mainAxisAlignment: .center,
-                      crossAxisAlignment: .center,
-                      children: [
-                        const Text('Estado com ObservableStateBuilder:'),
-                        Text(
-                          counterState.counter.toString(),
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(width: 10),
-                IconButton(
-                  onPressed: counterState.increment,
-                  icon: Icon(Icons.add),
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                Column(
-                  mainAxisAlignment: .center,
-                  children: [
-                    const Text('Estado com ChangeObservableStateController:'),
-                    Text(
-                      counterValueState.state.toString(),
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 10),
-                IconButton(
-                  onPressed: () {
-                    counterValueState.state++;
-                  },
-                  icon: Icon(Icons.add),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+      body: Center(child: _buildCounters()),
     );
   }
+
+  Widget _buildCounters() => Column(
+    mainAxisAlignment: MainAxisAlignment.spaceAround,
+    children: [
+      Column(
+        children: [
+          ObservableBuilder(
+            observable: counterState,
+            builder: (context) => Column(
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .center,
+              children: [
+                const Text('Estado com ObservableBuilder:'),
+                Text(
+                  counterState.counter.toString(),
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          IconButton(onPressed: counterState.increment, icon: Icon(Icons.add)),
+        ],
+      ),
+      Column(
+        children: [
+          ObservableStateBuilder(
+            observableStateController: counterValueState,
+            builder: (context, state) => Column(
+              children: [
+                const Text('Estado com ObservableStateBuilder:'),
+                Text(
+                  state.toString(),
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              ],
+            ),
+            buildWhen: (oldState, newState) => oldState != newState,
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            onPressed: () {
+              counterValueState.state++;
+            },
+            icon: Icon(Icons.add),
+          ),
+        ],
+      ),
+    ],
+  );
 }
