@@ -1,8 +1,8 @@
-import 'package:curso_avancado_gerenciamento_estado/builders/observable_builder.dart';
-import 'package:curso_avancado_gerenciamento_estado/builders/observable_state_builder.dart';
-import 'package:curso_avancado_gerenciamento_estado/controllers/change_observable_state_controller.dart';
+import 'package:curso_avancado_gerenciamento_estado/controllers/change_observable_value_controller.dart';
+import 'package:curso_avancado_gerenciamento_estado/mixins/change_observable_mixin.dart';
+import 'package:curso_avancado_gerenciamento_estado/mixins/change_observable_value_mixin.dart';
 import 'package:flutter/material.dart';
-import 'classes/counter_state.dart';
+import 'classes/counter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,9 +30,17 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final counterState = CounterState();
-  final counterValueState = ChangeObservableStateController(0);
+class _MyHomePageState extends State<MyHomePage>
+    with ChangeObservableMixin, ChangeObservableValueMixin {
+  final counter = Counter();
+  final counterValue = ChangeObservableValueController(0);
+
+  @override
+  void initState() {
+    super.initState();
+    useObservable(counter);
+    useObservableValue(counterValue);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,43 +58,36 @@ class _MyHomePageState extends State<MyHomePage> {
     children: [
       Column(
         children: [
-          ObservableBuilder(
-            observable: counterState,
-            builder: (context) => Column(
-              mainAxisAlignment: .center,
-              crossAxisAlignment: .center,
-              children: [
-                const Text('Estado com ObservableBuilder:'),
-                Text(
-                  counterState.counter.toString(),
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-              ],
-            ),
+          Column(
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .center,
+            children: [
+              const Text('Estado com Observable:'),
+              Text(
+                counter.counter.toString(),
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ],
           ),
           const SizedBox(width: 10),
-          IconButton(onPressed: counterState.increment, icon: Icon(Icons.add)),
+          IconButton(onPressed: counter.increment, icon: Icon(Icons.add)),
         ],
       ),
       Column(
         children: [
-          ObservableStateBuilder(
-            observableStateController: counterValueState,
-            builder: (context, state) => Column(
-              children: [
-                const Text('Estado com ObservableStateBuilder:'),
-                Text(
-                  state.toString(),
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-              ],
-            ),
-            buildWhen: (oldState, newState) => oldState != newState,
+          Column(
+            children: [
+              const Text('Estado com ObservableState:'),
+              Text(
+                counterValue.value.toString(),
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ],
           ),
           const SizedBox(width: 10),
           IconButton(
             onPressed: () {
-              counterValueState.state++;
+              counterValue.value++;
             },
             icon: Icon(Icons.add),
           ),
